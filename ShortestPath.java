@@ -435,17 +435,78 @@ public class ShortestPath extends javax.swing.JFrame  {
          
         
     }//GEN-LAST:event_jButton5MouseClicked
-
+    static ListenableGraph<String, DefaultWeightedEdge> g2; 
     private void jButton6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseClicked
         // TODO add your handling code here:
         KruskalMinimumSpanningTree kmst = new KruskalMinimumSpanningTree(g);
         SpanningTreeAlgorithm.SpanningTree<DefaultWeightedEdge> tree = kmst.getSpanningTree();
          java.util.Set<DefaultWeightedEdge> l = tree.getEdges();
-         Iterator<DefaultWeightedEdge> i = l.iterator();
-         while(i.hasNext()){
+         Iterator<DefaultWeightedEdge> it = l.iterator();
+         g2 =  new DefaultListenableGraph<String, DefaultWeightedEdge>(new DefaultUndirectedWeightedGraph<>(DefaultWeightedEdge.class));
+          jgxAdapter = new JGraphXAdapter<>(g2);
+         mxGraphComponent component = new mxGraphComponent(jgxAdapter);
+        component.setConnectable(false);
+        component.getGraph().setAllowDanglingEdges(false);
+        getContentPane().add(component);
+        
+        int count = n,v=0;
+        String[] edge = new String[n];
+        while(count>0){
+            edge[v] = "v"+Integer.toString(v);
+            count--;
+            v++;
+        }
+       
+        count = n;v=0;
+        while(count>0){
+            g2.addVertex(edge[v]);
+            count--;
+            v++;
             
-             i.next();
+        }
+        
+        count = 0;
+        for(int i = 0; i < n; i++)
+            for(int j = 0; j < n; j++)
+                if(mat[i][j]!=0)
+                    count++;
+        
+        
+        DefaultWeightedEdge[] e = new DefaultWeightedEdge[count];
+        
+        
+        
+        
+        
+        for(int i = 0; i< n ; i++)
+                for(int j = 0; j < n; j++)
+                    if(mat[i][j]!=0)
+                        g2.setEdgeWeight(g.getEdge("v"+Integer.toString(i), "v"+Integer.toString(j)), new Double(mat[i][j]));
+       
+         while(it.hasNext()){
+             DefaultWeightedEdge ed = it.next();
+             g2.addEdge(g.getEdgeSource(ed).toString(), g.getEdgeTarget(ed).toString(), ed);
          }
+        
+         
+         
+         mxCircleLayout layout = new mxCircleLayout(jgxAdapter);
+
+        // center the circle
+        int radius = 100;
+        layout.setX0((DEFAULT_SIZE.width / 2.0) - radius);
+        layout.setY0((DEFAULT_SIZE.height / 2.0) - radius);
+        layout.setRadius(radius);
+        layout.setMoveCircle(true);
+
+        layout.execute(jgxAdapter.getDefaultParent()); 
+        JFrame frame = new JFrame();
+        
+        frame.getContentPane().add(component);
+        frame.pack();
+        
+        frame.setLocation(getContentPane().getWidth(),400);
+        frame.setVisible(true);
     }//GEN-LAST:event_jButton6MouseClicked
     
     
